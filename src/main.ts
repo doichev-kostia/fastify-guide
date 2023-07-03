@@ -9,7 +9,8 @@ const app = fastify({
 		transport: {
 			target: "pino-pretty",
 		}
-	}
+	},
+	ignoreTrailingSlash: true
 });
 
 app.ready().then(() => {
@@ -34,9 +35,34 @@ process.once("SIGINT", async function closeApp() {
 });
 
 app.get("/", async (request, reply) => {
-	const err = new Error("This is an error");
-	reply.send(err);
-})
+	return {success: "ok"};
+});
+
+app.get("/api/cats", async (request, reply) => {
+	return [{
+		id: 1,
+		name: "a"
+	}];
+});
+
+app.get("/users/me", (request, reply) => {
+	return {
+		fullName: "Kostia Doichev"
+	};
+});
+
+app.get("/users/me", {
+		constraints: {
+			version: "2.0.0"
+		},
+	},
+	(request, reply) => {
+		return {
+			firstName: "Kostia",
+			lastName: "Doichev"
+		};
+	}
+);
 
 app.listen({
 	port: 8080,
