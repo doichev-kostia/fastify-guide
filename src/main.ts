@@ -64,6 +64,22 @@ app.get("/users/me", {
 	}
 );
 
+
+
+app.register(function privatePlugin(instance, options, next) {
+	instance.addHook("onRequest", function isAdmin(request, reply, done) {
+		if (request.headers["x-api-key"] === "ADM1N") {
+			done();
+		} else {
+			done(new Error("you are not admin"));
+		}
+	});
+	instance.get("/private", function handle(request, reply) {
+		reply.send({secret: "data"});
+	});
+	next();
+});
+
 app.listen({
 	port: 8080,
 	host: "0.0.0.0",
