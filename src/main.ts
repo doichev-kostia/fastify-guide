@@ -1,6 +1,7 @@
 import fastify from "fastify";
 import { milliseconds } from "./constants.js";
-import * as process from "node:process";
+import process from "node:process";
+import { app as application } from "./app.js";
 
 
 const app = fastify({
@@ -8,16 +9,10 @@ const app = fastify({
 		level: "debug",
 		transport: {
 			target: "pino-pretty",
-		}
+		},
 	},
-	ignoreTrailingSlash: true
+	ignoreTrailingSlash: true,
 });
-
-app.ready().then(() => {
-	app.log.info("All plugins are registered");
-	console.log(app.printRoutes());
-});
-
 process.once("SIGINT", async function closeApp() {
 	app.log.info("Gracefully closing");
 	const timeout = setTimeout(function forceClose() {
@@ -34,55 +29,17 @@ process.once("SIGINT", async function closeApp() {
 	}
 });
 
-app.get("/", async (request, reply) => {
-	return {success: "ok"};
+app.register(application)
+
+app.ready().then(() => {
+	app.log.info("All plugins are registered");
+	console.log(app.printRoutes());
 });
 
-app.get("/api/cats", async (request, reply) => {
-	return [{
-		id: 1,
-		name: "a"
-	}];
-});
-
-app.get("/users/me", (request, reply) => {
-	return {
-		fullName: "Kostia Doichev"
-	};
-});
-
-app.get("/users/me", {
-		constraints: {
-			version: "2.0.0"
-		},
-	},
-	(request, reply) => {
-		return {
-			firstName: "Kostia",
-			lastName: "Doichev"
-		};
-	}
-);
-
-
-
-app.register(function privatePlugin(instance, options, next) {
-	instance.addHook("onRequest", function isAdmin(request, reply, done) {
-		if (request.headers["x-api-key"] === "ADM1N") {
-			done();
-		} else {
-			done(new Error("you are not admin"));
-		}
-	});
-	instance.get("/private", function handle(request, reply) {
-		reply.send({secret: "data"});
-	});
-	next();
-});
 
 app.listen({
 	port: 8080,
-	host: "0.0.0.0",
+	host: "localhost",
 })
 	.then((address) => {
 		console.log(`Server is running on ${address}`);
