@@ -2,13 +2,15 @@
   "compilerOptions": {
     "incremental": true,
     "composite": true,
-    "target": "es2022",
-    "module": "es2022",
+    "target": "esnext",
+    "module": "esnext",
     "lib": [
       "ES2022.Error"
     ],
     "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
     "baseUrl": "./src",
+    "outDir": "./build",
     "allowJs": true,
     "checkJs": true,
     "isolatedModules": true,
@@ -18,8 +20,5 @@
     "strict": true,
     "strictNullChecks": true,
     "skipLibCheck": true
-  },
-  "include": [
-    "src"
-  ],
+  }
 }
