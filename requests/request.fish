@@ -1,14 +1,24 @@
 #!/usr/bin/env fish
 
+# options:
+# --auth <boolean> - whether to use auth (optional)
+# --endpoint <string> - the endpoint to hit (optional)
+
 source ./requests/auth.fish
+
+function normalize_endpoint
+    set -l input $argv[1]
+    if test $input && test (string sub -l 1 -- $input) = /
+        set input (string sub -s 2 $input)
+    end
+
+    echo $input
+end
 
 set -x -g base_url "http://[::1]:8080"
 set -x -g endpoint ""
 set -x -g curl_args
 
-# options:
-# --auth <boolean> - whether to use auth (optional)
-# --endpoint <string> - the endpoint to hit (optional)
 
 if contains -- --auth $argv
     echo "Authenticating..." >&2
@@ -22,9 +32,9 @@ if contains -- --endpoint $argv
     set -x -g endpoint $argv[$value_index]
 end
 
-if test $endpoint && test $(string sub -l 1 $endpoint) = /
-    set -x -g endpoint (string sub -s 2 $endpoint)
-end
+set -g endpoint (normalize_endpoint $endpoint)
+
+echo "Endpoint: $endpoint" >&2
 
 set url "$base_url/$endpoint"
 
@@ -33,7 +43,9 @@ if test $token
 end
 
 for arg in $argv
-    if test $arg != --auth && test $arg != --endpoint && contains $endpoint $arg
+    set -l normalized_endpoint (normalize_endpoint $arg)
+
+    if test $arg != --auth && test $arg != --endpoint && test $normalized_endpoint != $endpoint
         set --append curl_args $arg
     end
 end
