@@ -1,6 +1,7 @@
-import { FastifyInstance, FastifyPluginOptions } from "fastify";
+import { type FastifyInstance, type FastifyPluginOptions } from "fastify";
 
 export default async function todoRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
+	fastify.addHook('onRequest', fastify.authenticate);
 
 	fastify.route({
 		method: "GET",
@@ -12,14 +13,14 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 		},
 		url: "/",
 		handler: async function listTodos(request, reply) {
-			const data = await this.mongoDataSource.listTodos({
+			const data = await request.todosDataSource.listTodos({
 				filter: { title: request.query.title },
 				skip: request.query.skip,
 				limit: request.query.limit,
 			});
 
 
-			const count = await this.mongoDataSource.countTodos({
+			const count = await request.todosDataSource.countTodos({
 				title: request.query.title,
 			});
 
@@ -40,7 +41,7 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 			},
 		},
 		handler: async function createTodo(request, reply) {
-			const insertedId = await this.mongoDataSource.createTodo({ title: request.body.title });
+			const insertedId = await request.todosDataSource.createTodo({ title: request.body.title });
 			reply.code(fastify.httpStatus.CREATED);
 			return {
 				id: insertedId,
@@ -58,7 +59,7 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 			},
 		},
 		handler: async function readTodo(request, reply) {
-			const todo = await this.mongoDataSource.readTodo(request.params.id);
+			const todo = await request.todosDataSource.readTodo(request.params.id);
 
 			if (!todo) {
 				throw fastify.httpErrors.notFound("Todo not found");
@@ -76,7 +77,7 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 		},
 		url: "/:id",
 		handler: async function updateTodo(request, reply) {
-			const res = await this.mongoDataSource.updateTodo(request.params.id, request.body);
+			const res = await request.todosDataSource.updateTodo(request.params.id, request.body);
 
 			if (res.modifiedCount === 0) {
 				throw fastify.httpErrors.notFound("Todo not found");
@@ -93,7 +94,7 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 			params: fastify.getSchema("schema:todo:read:params"),
 		},
 		handler: async function deleteTodo(request, reply) {
-			const res = await this.mongoDataSource.deleteTodo(request.params.id);
+			const res = await request.todosDataSource.deleteTodo(request.params.id);
 
 			if (res.deletedCount === 0) {
 				throw fastify.httpErrors.notFound("Todo not found");
@@ -110,7 +111,7 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 			params: fastify.getSchema("schema:todo:status:params"),
 		},
 		handler: async function changeStatus(request, reply) {
-			const res = await this.mongoDataSource.updateTodo(request.params.id, {
+			const res = await request.todosDataSource.updateTodo(request.params.id, {
 				done: request.params.status === "done",
 			})
 			if (res.modifiedCount === 0) {

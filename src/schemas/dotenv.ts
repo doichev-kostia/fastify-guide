@@ -16,6 +16,13 @@ export const schema = {
 		"MONGO_URL": {
 			"type": "string",
 		},
+		"JWT_SECRET": {
+			"type": "string",
+		},
+		"JWT_EXPIRES_IN": {
+			"type": "string",
+			"default": "1h",
+		}
 	},
 } as const;
 
