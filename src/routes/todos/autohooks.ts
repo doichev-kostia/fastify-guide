@@ -16,7 +16,7 @@ declare module "fastify" {
 				asStream?: boolean;
 			}) => Promise<WithId<Document>[]>;
 			createTodo: (options: { title: string }) => Promise<ObjectId>;
-			createTodos: (todoList: { title: string; done: boolean }[]) => Promise<ObjectId[]>;
+			createTodos: (todoList: { title: string; done: boolean }[]) => Promise<{ id: ObjectId}[]>;
 			readTodo: (id: string, projection?: Record<string, unknown>) => Promise<WithId<Document> | null>;
 			updateTodo: (id: string, options: { title?: string; done?: boolean }) => Promise<UpdateResult<Document>>;
 			deleteTodo: (id: string) => Promise<DeleteResult>;
@@ -87,7 +87,7 @@ export default fp(async function todoAutoHooks(fastify: FastifyInstance) {
 
 				return insertedId;
 			},
-			async createTodos(todoList): Promise<ObjectId[]> {
+			async createTodos(todoList): Promise<{ id: ObjectId}[]> {
 				const now = new Date();
 				const userId = request.user.id;
 				const toInsert = todoList.map((todo) => {
@@ -104,7 +104,11 @@ export default fp(async function todoAutoHooks(fastify: FastifyInstance) {
 				});
 
 				await todos.insertMany(toInsert);
-				return toInsert.map(({ id }) => id);
+				return toInsert.map(({ id }) => {
+					return {
+						id
+					}
+				});
 			},
 			async readTodo(
 				id: string,

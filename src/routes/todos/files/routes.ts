@@ -5,9 +5,9 @@ import { stringify } from "csv-stringify";
 
 export default async function fileTodoRoutes(fastify: FastifyInstance, options: FastifyPluginOptions): Promise<void> {
 	await fastify.register(fastifyMultipart, {
-		attachFieldsToBody: true,
+		attachFieldsToBody: "keyValues",
 		onFile: handleIncomingFile,
-		// sharedSchemaId: "schema:todo:import:file",
+		sharedSchemaId: "schema:todo:import:file",
 		limits: {
 			filedNameSize: 50,
 			fieldSize: 100,
@@ -23,45 +23,43 @@ export default async function fileTodoRoutes(fastify: FastifyInstance, options: 
 		method: "POST",
 		url: "/import",
 		schema: {
-			// body: {
-			// 	type: "object",
-			// 	required: ["todoListFile"],
-			// 	description: "Import a todo list from a CSV file with the following format: title,done",
-			// 	properties: {
-			// 		todoListFile: {
-			// 			type: "array",
-			// 			items: {
-			// 				type: "object",
-			// 				required: ["title", "done"],
-			// 				properties: {
-			// 					title: { type: "string" },
-			// 					done: { type: "boolean" },
-			// 				},
-			// 			},
-			// 		},
-			// 	},
-			// },
+			body: {
+				type: "object",
+				required: ["todoListFile"],
+				description: "Import a todo list from a CSV file with the following format: title,done",
+				properties: {
+					todoListFile: {
+						type: "array",
+						items: {
+							type: "object",
+							required: ["title", "done"],
+							properties: {
+								title: { type: "string" },
+								done: { type: "boolean" },
+							},
+						},
+					},
+				},
+			},
 			response: {
 				201: {
-					type: 'array',
-					items: fastify.getSchema('schema:todo:create:response')
-				}
-			}
+					type: "array",
+					items: fastify.getSchema("schema:todo:create:response"),
+				},
+			},
 		},
 		handler: async function importTodo(request, reply) {
-			console.log({ body: request.body })
-			return;
 			const inserted = await request.todosDataSource.createTodos(request.body.todoListFile);
 			reply.code(fastify.httpStatus.CREATED);
 			return inserted;
-		}
+		},
 	});
 
 	fastify.route({
 		method: "GET",
 		url: "/export",
 		schema: {
-			querystring: fastify.getSchema("schema:todo:list:export")
+			querystring: fastify.getSchema("schema:todo:list:export"),
 		},
 		handler: async function exportTodos(request, reply) {
 			const { title } = request.query;
@@ -70,27 +68,27 @@ export default async function fileTodoRoutes(fastify: FastifyInstance, options: 
 				filter: { title },
 				skip: 0,
 				limit: undefined,
-				asStream: true
+				asStream: true,
 			});
 
-			reply.header('Content-Disposition', 'attachment; filename="todo-list.csv"');
-			reply.type('text/csv');
+			reply.header("Content-Disposition", "attachment; filename=\"todo-list.csv\"");
+			reply.type("text/csv");
 
 			return cursor.pipe(stringify({
 				quoted_string: true,
 				header: true,
-				columns: ['title', 'done', 'createdAt', 'modifiedAt', 'id'],
+				columns: ["title", "done", "createdAt", "modifiedAt", "id"],
 				cast: {
-					boolean: (value) => value ? 'true' : 'false',
+					boolean: (value) => value ? "true" : "false",
 					date: (value) => value.toISOString(),
-				}
-			}))
-		}
-	})
+				},
+			}));
+		},
+	});
 }
 
 async function handleIncomingFile(part: fastifyMultipart.MultipartFile): Promise<void> {
-	const lines: {title: string; done: boolean }[] = [];
+	const lines: { title: string; done: boolean }[] = [];
 
 	const stream = part.file.pipe(parse({
 		bom: true,
@@ -106,5 +104,5 @@ async function handleIncomingFile(part: fastifyMultipart.MultipartFile): Promise
 		});
 	}
 
-	part.values = lines;
+	part.value = lines;
 }
