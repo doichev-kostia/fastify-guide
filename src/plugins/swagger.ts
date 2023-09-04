@@ -1,6 +1,7 @@
 import fp from "fastify-plugin";
 import swagger from "@fastify/swagger";
 import * as path from "node:path";
+import swaggerUI from "@fastify/swagger-ui";
 
 export default fp(async function swaggerConfig(fastify, options) {
 	const packageJSON =  await import(path.resolve('package.json'), {
@@ -12,8 +13,7 @@ export default fp(async function swaggerConfig(fastify, options) {
 	const version = packageJSON.version;
 
 	fastify.register(swagger, {
-		routePrefix: "/docs",
-		exposeRoute: fastify.secrets.NODE_ENV !== "production",
+		routePrefix: "/docs/json",
 		swagger: {
 			info: {
 				title: "Fastify API",
@@ -22,6 +22,10 @@ export default fp(async function swaggerConfig(fastify, options) {
 			}
 		}
 	} as swagger.SwaggerOptions)
+
+	fastify.register(swaggerUI, {
+		routePrefix: "/docs",
+	})
 }, {
 	name: "swagger-config",
 	dependencies: ["application-configuration"]

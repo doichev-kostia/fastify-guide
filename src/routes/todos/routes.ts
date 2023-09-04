@@ -1,14 +1,23 @@
-import { type FastifyInstance, type FastifyPluginOptions } from "fastify";
+import { type FastifyPluginOptions } from "fastify";
+import { type FastifyPluginAsyncZod } from "../../types.js";
+import { ListQuerySchema } from "./schemas/list.query.js";
+import { ListResponseSchema } from "./schemas/list.response.js";
+import { CreateBodySchema } from "./schemas/create.body.js";
+import { CreateResponseSchema } from "./schemas/create.response.js";
+import { ReadParamsSchema } from "./schemas/read.params.js";
+import { TodoSchema } from "./schemas/todo.schema.js";
+import { UpdateBodySchema } from "./schemas/update.body.js";
+import { StatusParamsSchema } from "./schemas/status.params.js";
 
-export default async function todoRoutes(fastify: FastifyInstance, options: FastifyPluginOptions) {
+const todoRoutes: FastifyPluginAsyncZod = async function todoRoutes(fastify, options: FastifyPluginOptions) {
 	fastify.addHook('onRequest', fastify.authenticate);
 
 	fastify.route({
 		method: "GET",
 		schema: {
-			querystring: fastify.getSchema("schema:todo:list:query"),
+			querystring: ListQuerySchema,
 			response: {
-				200: fastify.getSchema("schema:todo:list:response"),
+				200: ListResponseSchema,
 			},
 		},
 		url: "/",
@@ -35,16 +44,16 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 		method: "POST",
 		url: "/",
 		schema: {
-			body: fastify.getSchema("schema:todo:create:body"),
+			body: CreateBodySchema,
 			response: {
-				201: fastify.getSchema("schema:todo:create:response"),
+				201: CreateResponseSchema,
 			},
 		},
 		handler: async function createTodo(request, reply) {
 			const insertedId = await request.todosDataSource.createTodo({ title: request.body.title });
 			reply.code(fastify.httpStatus.CREATED);
 			return {
-				id: insertedId,
+				id: insertedId.toJSON(),
 			};
 		},
 	});
@@ -53,9 +62,9 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 		method: "GET",
 		url: "/:id",
 		schema: {
-			params: fastify.getSchema("schema:todo:read:params"),
+			params: ReadParamsSchema,
 			response: {
-				200: fastify.getSchema("schema:todo"),
+				200: TodoSchema,
 			},
 		},
 		handler: async function readTodo(request, reply) {
@@ -72,8 +81,8 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 	fastify.route({
 		method: "PUT",
 		schema: {
-			params: fastify.getSchema("schema:todo:read:params"),
-			body: fastify.getSchema("schema:todo:update:body"),
+			params: ReadParamsSchema,
+			body: UpdateBodySchema,
 		},
 		url: "/:id",
 		handler: async function updateTodo(request, reply) {
@@ -91,7 +100,7 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 		method: "DELETE",
 		url: "/:id",
 		schema: {
-			params: fastify.getSchema("schema:todo:read:params"),
+			params: ReadParamsSchema,
 		},
 		handler: async function deleteTodo(request, reply) {
 			const res = await request.todosDataSource.deleteTodo(request.params.id);
@@ -108,7 +117,7 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 		method: "POST",
 		url: "/:id/:status",
 		schema: {
-			params: fastify.getSchema("schema:todo:status:params"),
+			params: StatusParamsSchema,
 		},
 		handler: async function changeStatus(request, reply) {
 			const res = await request.todosDataSource.updateTodo(request.params.id, {
@@ -121,4 +130,7 @@ export default async function todoRoutes(fastify: FastifyInstance, options: Fast
 			reply.code(fastify.httpStatus.NO_CONTENT);
 		},
 	});
-}
+};
+
+export default todoRoutes;
+

@@ -1,25 +1,7 @@
-import { type JTDDataType } from "ajv/dist/jtd.js";
+import { z } from "zod";
 
-export const StatusParamsSchema = {
-	"type": "object",
-	"$id": "schema:todo:status:params",
-	"required": [
-		"id",
-		"status"
-	],
-	"additionalProperties": false,
-	"properties": {
-		"id": {
-			"type": "string"
-		},
-		"status": {
-			"type": "string",
-			"enum": [
-				"done",
-				"undone"
-			]
-		}
-	}
-} as const;
-
-export type StatusParams = JTDDataType<typeof StatusParamsSchema>
+export const StatusParamsSchema = z.object({
+	id: z.string(),
+	status: z.enum(["done", "undone"]),
+})
+export type StatusParams = z.infer<typeof StatusParamsSchema>;

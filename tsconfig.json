@@ -20,5 +20,10 @@
     "strict": true,
     "strictNullChecks": true,
     "skipLibCheck": true
-  }
+  },
+  "include": [
+    "src",
+    "types",
+    "test"
+  ]
 }

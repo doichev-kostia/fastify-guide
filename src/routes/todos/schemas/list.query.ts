@@ -1,20 +1,9 @@
-import { type JTDDataType } from "ajv/dist/jtd.js";
+import { z } from "zod";
 
-export const ListQuerySchema = {
-	"type": "object",
-	"$id": "schema:todo:list:query",
-	"additionalProperties": false,
-	"properties": {
-		"title": {
-			"type": "string"
-		},
-		"limit": {
-			"$ref": "schema:limit#/properties/limit"
-		},
-		"skip": {
-			"$ref": "schema:skip#/properties/skip"
-		}
-	}
-} as const;
+export const ListQuerySchema = z.object({
+	title: z.string(),
+	limit: z.number().int().positive().optional().default(10),
+	skip: z.number().int().positive().optional().default(0),
+})
 
-export type ListQuery = JTDDataType<typeof ListQuerySchema>
+export type ListQuery = z.infer<typeof ListQuerySchema>;

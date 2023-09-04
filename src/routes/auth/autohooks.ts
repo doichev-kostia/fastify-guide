@@ -1,7 +1,6 @@
-import { FastifyInstance } from "fastify";
-import schemas from "./schemas/loader.js";
-import { Document, WithId } from "mongodb";
-import { ObjectId } from "@fastify/mongodb";
+import { type FastifyInstance } from "fastify";
+import { type Document, type WithId } from "mongodb";
+import { type ObjectId } from "@fastify/mongodb";
 import fp from "fastify-plugin";
 import { type User } from "./types.js";
 
@@ -21,7 +20,6 @@ export default fp(async function authAutoHooks(fastify: FastifyInstance): Promis
 		throw new Error("Users collection not found");
 	}
 
-	fastify.register(schemas);
 
 	fastify.decorate("userDataSource", {
 		async readUser(username: string): Promise<WithId<Document> | null> {

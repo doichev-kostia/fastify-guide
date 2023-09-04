@@ -1,15 +1,7 @@
-import { type JTDDataType } from "ajv/dist/jtd.js";
+import { z } from "zod";
 
-export const ReadParamsSchema = {
-	"type": "object",
-	"$id": "schema:todo:read:params",
-	"required": ["id"],
-	"additionalProperties": false,
-	"properties": {
-		"id": {
-			"type": "string"
-		}
-	}
-} as const;
+export const ReadParamsSchema = z.object({
+	id: z.string(),
+});
 
-export type ReadParams = JTDDataType<typeof ReadParamsSchema>
+export type ReadParams = z.infer<typeof ReadParamsSchema>;

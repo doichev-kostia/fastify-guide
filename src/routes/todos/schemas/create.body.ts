@@ -1,14 +1,7 @@
-import { type JTDDataType } from "ajv/dist/jtd.js";
+import { z } from "zod";
 
-export const CreateBodySchema = {
-	type: "object",
-	"$id":"schema:todo:create:body",
-	required: ["title"],
-	properties: {
-		title: {
-			type: "string",
-		}
-	}
-} as const;
+export const CreateBodySchema = z.object({
+	title: z.string(),
+})
 
-export type CreateBody = JTDDataType<typeof CreateBodySchema>
+export type CreateBody = z.infer<typeof CreateBodySchema>;

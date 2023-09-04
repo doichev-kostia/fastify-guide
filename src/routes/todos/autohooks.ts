@@ -1,5 +1,4 @@
 import { type FastifyInstance } from "fastify";
-import schemas from "./schemas/loader.js";
 import { type ObjectId } from "@fastify/mongodb";
 import { type DeleteResult, type Document, type UpdateResult, type WithId } from "mongodb";
 import fp from "fastify-plugin";
@@ -30,8 +29,6 @@ export default fp(async function todoAutoHooks(fastify: FastifyInstance) {
 	if (!todos) {
 		throw new Error("Todos collection not found");
 	}
-
-	fastify.register(schemas);
 
 	fastify.decorate("todosDataSource", null); // speed optimization. making the application aware of the existence of the todosDataSource property at the beginning of the request lifecycle
 	fastify.addHook("onRequest", async (request, reply) => {

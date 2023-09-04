@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "type": "module",
+  "main": "./src/app.ts",
   "scripts": {
     "build": "swc src --out-dir build",
     "build:clean": "rm -rf build && pnpm run build",
@@ -10,23 +11,28 @@
     "start": "pnpm exec fastify start -l info ./build/app.js",
     "dev": "pnpm exec fastify start -w -l debug -P ./build/app.js",
     "lint": "pnpm exec standard",
-    "lint:fix": "pnpm exec standard --fix"
+    "lint:fix": "pnpm exec standard --fix",
+    "test": "SWCRC=true pnpm exec tap --node-arg=--loader=@swc-node/register/esm "
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@swc-node/register": "^1.6.6",
     "@swc/cli": "^0.1.62",
     "@swc/core": "^1.3.68",
     "@swc/helpers": "^0.5.1",
     "@types/eslint": "^8.44.0",
     "@types/node": "^20.3.3",
+    "@types/tap": "^15.0.8",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "chokidar": "^3.5.3",
     "eslint": "^8.45.0",
+    "fastify-cli": "^5.8.0",
     "prettier": "^3.0.0",
     "standard": "^17.1.0",
+    "tap": "^16.3.8",
     "tsx": "^3.12.7",
     "typescript": "^5.1.6"
   },
@@ -39,15 +45,17 @@
     "@fastify/multipart": "^7.7.3",
     "@fastify/sensible": "^5.2.0",
     "@fastify/swagger": "^8.8.0",
+    "@fastify/swagger-ui": "^1.9.3",
     "ajv": "^8.12.0",
     "csv-parse": "^5.4.0",
     "csv-stringify": "^6.4.0",
     "fastify": "^4.19.2",
-    "fastify-cli": "^5.7.1",
     "fastify-plugin": "^4.5.0",
+    "fastify-type-provider-zod": "^1.1.9",
     "globby": "^13.2.2",
     "mongodb": "^5.7.0",
-    "pino-pretty": "^10.0.0"
+    "pino-pretty": "^10.0.0",
+    "zod": "^3.21.4"
   },
   "packageManager": "pnpm@8.6.6"
 }

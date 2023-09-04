@@ -1,11 +1,16 @@
 import fp from "fastify-plugin";
 import { type FastifyReply, type FastifyRequest } from "fastify";
 import { generateHash } from "./generate-hash.js";
+import { RegisterSchema } from "./schemas/register.schema.js";
+import { type FastifyPluginAsyncZod } from "../../types.js";
+import { TokenSchema } from "./schemas/token.schema.js";
+import { TokenHeaderSchema } from "./schemas/token-header.schema.js";
+import { UserSchema } from "./schemas/user.schema.js";
 
-export default fp(async function authRoutes(fastify , options ): Promise<void> {
+const authRoutes: FastifyPluginAsyncZod =  fp(async function authRoutes(fastify , options ): Promise<void> {
 	fastify.post("/register", {
 		schema: {
-			body: fastify.getSchema("schema:auth:register"),
+			body: RegisterSchema,
 		},
 	}, async function registerHandler(request, reply) {
 		const existingUser = await this.userDataSource.readUser(request.body.username);
@@ -35,9 +40,9 @@ export default fp(async function authRoutes(fastify , options ): Promise<void> {
 
 	fastify.post("/authenticate", {
 		schema: {
-			body: fastify.getSchema("schema:auth:register"),
+			body: RegisterSchema,
 			response: {
-				200: fastify.getSchema("schema:auth:token"),
+				200: TokenSchema
 			}
 		}
 	}, async function authenticateHandler(request, reply) {
@@ -60,9 +65,9 @@ export default fp(async function authRoutes(fastify , options ): Promise<void> {
 	fastify.get("/me", {
 		onRequest: fastify.authenticate,
 		schema: {
-			headers: fastify.getSchema("schema:auth:token-header"),
+			headers: TokenHeaderSchema,
 			response: {
-				200: fastify.getSchema("schema:user")
+				200: UserSchema
 			}
 
 		}
@@ -73,9 +78,9 @@ export default fp(async function authRoutes(fastify , options ): Promise<void> {
 	fastify.post("/refresh", {
 		onRequest: fastify.authenticate,
 		schema: {
-			headers: fastify.getSchema("schema:auth:token-header"),
+			headers: TokenHeaderSchema,
 			response: {
-				200: fastify.getSchema("schema:auth:token"),
+				200: TokenSchema,
 			}
 		},
 	}, refreshHandler);
@@ -99,3 +104,5 @@ export default fp(async function authRoutes(fastify , options ): Promise<void> {
 	dependencies: ['authentication-plugin'],
 	encapsulate: true,
 });
+
+export default authRoutes;

@@ -1,20 +1,9 @@
-import { type JTDDataType } from "ajv/dist/jtd.js";
+import { z } from "zod";
+import { TodoSchema } from "./todo.schema.js";
 
-export const ListResponseSchema = {
-	"type": "object",
-	"$id": "schema:todo:list:response",
-	"additionalProperties": false,
-	"properties": {
-		"data": {
-			"type": "array",
-			"items": {
-				"$ref": "schema:todo"
-			}
-		},
-		"totalCount": {
-			"type": "integer"
-		}
-	}
-} as const;
+export const ListResponseSchema = z.object({
+	data: z.array(TodoSchema),
+	totalCount: z.number().int().positive(),
+});
 
-export type ListResponse = JTDDataType<typeof ListResponseSchema>
+export type ListResponse = z.infer<typeof ListResponseSchema>;

@@ -1,12 +1,8 @@
-export const TokenHeaderSchema = {
-	"type": "object",
-	"$id": "schema:auth:token-header",
-	"properties": {
-		"authorization": {
-			"type": "string",
-			"pattern": "^Bearer [a-zA-Z0-9-._~+/]+=*$"
-		}
-	}
-} as const;
+import { z } from "zod";
 
-export default TokenHeaderSchema;
+export const TokenHeaderSchema = z.object({
+	authorization: z.string().regex(/^Bearer [a-zA-Z0-9-._~+/]+=*$/),
+})
+
+export type TokenHeader = z.infer<typeof TokenHeaderSchema>;
+

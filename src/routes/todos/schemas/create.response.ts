@@ -1,15 +1,7 @@
-import { type JTDDataType } from "ajv/dist/jtd.js";
+import { z } from "zod";
 
-export const CreateResponseSchema = {
-	"type": "object",
-	"$id": "schema:todo:create:response",
-	"required": ["id"],
-	"additionalProperties": false,
-	"properties": {
-		"id": {
-			"type": "string"
-		}
-	}
-} as const;
+export const CreateResponseSchema = z.object({
+	id: z.string(),
+})
 
-export type CreateResponse = JTDDataType<typeof CreateResponseSchema>
+export type CreateResponse = z.infer<typeof CreateResponseSchema>;

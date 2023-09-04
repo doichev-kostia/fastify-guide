@@ -1,31 +1,12 @@
-import { type JTDDataType } from "ajv/dist/jtd.js";
+import { z } from "zod";
 
-export const TodoSchema = {
-	"type": "object",
-	"$id": "schema:todo",
-	"additionalProperties": false,
-	"properties": {
-		"_id": {
-			"type": "string"
-		},
-		"id": {
-			"type": "string"
-		},
-		"title": {
-			"type": "string"
-		},
-		"done": {
-			"type": "boolean"
-		},
-		"createdAt": {
-			"type": "string",
-			"format": "date-time"
-		},
-		"modifiedAt": {
-			"type": "string",
-			"format": "date-time"
-		}
-	}
-} as const;
+export const TodoSchema = z.object({
+	_id: z.string(),
+	id: z.string(),
+	title: z.string(),
+	done: z.boolean(),
+	createdAt: z.string().datetime(),
+	modifiedAt: z.string().datetime(),
+});
 
-export type Todo = JTDDataType<typeof TodoSchema>
+export type Todo = z.infer<typeof TodoSchema>;

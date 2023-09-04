@@ -1,22 +1,7 @@
-import { JSONSchemaType } from "ajv";
+import { z } from "zod";
 
-type SkipQuery = {
-	skip?: number;
-}
+export const SkipQuerySchema = z.object({
+	skip: z.number().int().min(0).default(0).nullable(),
+});
 
-
-const SkipQuerySchema: JSONSchemaType<SkipQuery> = {
-	type: "object",
-	$id: "schema:skip",
-	properties: {
-		skip: {
-			type: "integer",
-			default: 0,
-			minimum: 0,
-			nullable: true,
-		}
-	}
-} as const;
-
-
-export default SkipQuerySchema;
+export type SkipQuery = z.infer<typeof SkipQuerySchema>;

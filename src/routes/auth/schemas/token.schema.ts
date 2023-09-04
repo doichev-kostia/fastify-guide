@@ -1,12 +1,7 @@
-export const TokenSchema = {
-	"type": "object",
-	"$id": "schema:auth:token",
-	"additionalProperties": false,
-	"properties": {
-		"token": {
-			"type": "string"
-		}
-	}
-} as const;
+import { z } from "zod";
 
-export default TokenSchema;
+export const TokenSchema = z.object({
+	token: z.string(),
+})
+
+export type Token = z.infer<typeof TokenSchema>;

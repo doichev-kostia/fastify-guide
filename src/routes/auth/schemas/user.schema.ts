@@ -1,12 +1,7 @@
-export const UserSchema = {
-	"type": "object",
-	"$id": "schema:user",
-	"additionalProperties": false,
-	"properties": {
-		"username": {
-			"type": "string"
-		}
-	}
-} as const;
+import { z } from "zod";
 
-export default UserSchema;
+export const UserSchema = z.object({
+	username: z.string(),
+});
+
+export type User= z.infer<typeof UserSchema>;

@@ -1,13 +1,15 @@
-import { type FastifyInstance, type FastifyPluginOptions } from "fastify";
 import fastifyMultipart, { type FastifyMultipartAttachFieldsToBodyOptions } from "@fastify/multipart";
 import { parse } from "csv-parse";
 import { stringify } from "csv-stringify";
+import { ListExportQuerySchema } from "../schemas/list-export.query.js";
+import { type FastifyPluginAsyncZod } from "../../../types.js";
+import { z } from "zod";
+import { CreateResponseSchema } from "../schemas/create.response.js";
 
-export default async function fileTodoRoutes(fastify: FastifyInstance, options: FastifyPluginOptions): Promise<void> {
+const fileTodoRoutes: FastifyPluginAsyncZod = async function fileTodoRoutes(fastify, options): Promise<void> {
 	await fastify.register(fastifyMultipart, {
 		attachFieldsToBody: "keyValues",
 		onFile: handleIncomingFile,
-		sharedSchemaId: "schema:todo:import:file",
 		limits: {
 			filedNameSize: 50,
 			fieldSize: 100,
@@ -23,29 +25,16 @@ export default async function fileTodoRoutes(fastify: FastifyInstance, options: 
 		method: "POST",
 		url: "/import",
 		schema: {
-			body: {
-				type: "object",
-				required: ["todoListFile"],
-				description: "Import a todo list from a CSV file with the following format: title,done",
-				properties: {
-					todoListFile: {
-						type: "array",
-						items: {
-							type: "object",
-							required: ["title", "done"],
-							properties: {
-								title: { type: "string" },
-								done: { type: "boolean" },
-							},
-						},
-					},
-				},
-			},
+			body: z.object({
+				todoListFile: z.array(
+					z.object({
+						title: z.string(),
+						done: z.boolean(),
+					}),
+				),
+			}),
 			response: {
-				201: {
-					type: "array",
-					items: fastify.getSchema("schema:todo:create:response"),
-				},
+				201: z.array(CreateResponseSchema)
 			},
 		},
 		handler: async function importTodo(request, reply) {
@@ -59,7 +48,7 @@ export default async function fileTodoRoutes(fastify: FastifyInstance, options: 
 		method: "GET",
 		url: "/export",
 		schema: {
-			querystring: fastify.getSchema("schema:todo:list:export"),
+			querystring: ListExportQuerySchema,
 		},
 		handler: async function exportTodos(request, reply) {
 			const { title } = request.query;
@@ -106,3 +95,5 @@ async function handleIncomingFile(part: fastifyMultipart.MultipartFile): Promise
 
 	part.value = lines;
 }
+
+export default fileTodoRoutes;

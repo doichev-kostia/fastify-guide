@@ -1,21 +1,8 @@
-export const RegisterSchema = {
-	"type": "object",
-	"$id": "schema:auth:register",
-	"required": [
-		"username",
-		"password"
-	],
-	"properties": {
-		"username": {
-			"type": "string",
-			"pattern": "^[a-zA-Z0-9_]{3,50}$",
-			"maxLength": 50
-		},
-		"password": {
-			"type": "string",
-			"maxLength": 20
-		}
-	}
-} as const;
+import { z } from "zod";
 
-export default RegisterSchema;
+export const RegisterSchema = z.object({
+	username: z.string().regex(/^[a-zA-Z0-9_]{3,50}$/).max(50),
+	password: z.string().min(8),
+})
+
+export type Register = z.infer<typeof RegisterSchema>;
