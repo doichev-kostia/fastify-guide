@@ -12,7 +12,9 @@
     "dev": "pnpm exec fastify start -w -l debug -P ./build/app.js",
     "lint": "pnpm exec standard",
     "lint:fix": "pnpm exec standard --fix",
-    "test": "SWCRC=true pnpm exec tap --node-arg=--loader=@swc-node/register/esm "
+    "test": "SWCRC=true pnpm exec tap --node-arg=--loader=@swc-node/register/esm",
+    "mongo:start": "docker run -d -p 27017:27017 --rm --name fastify-mongo mongo:6",
+    "mongo:stop": "docker container stop fastify-mongo"
   },
   "keywords": [],
   "author": "",
