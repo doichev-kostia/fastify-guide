@@ -52,6 +52,7 @@
     "csv-parse": "^5.4.0",
     "csv-stringify": "^6.4.0",
     "fastify": "^4.19.2",
+    "fastify-metrics": "^10.3.0",
     "fastify-plugin": "^4.5.0",
     "fastify-type-provider-zod": "^1.1.9",
     "globby": "^13.2.2",
