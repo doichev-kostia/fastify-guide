@@ -29,7 +29,7 @@ export default fp(async function configLoader(fastify, options) {
 				},
 				"PORT": {
 					"type": "integer",
-					"default": "3000",
+					"default": "8080",
 				},
 				"MONGO_URL": {
 					"type": "string",

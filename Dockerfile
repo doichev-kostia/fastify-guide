@@ -1,13 +1,16 @@
 FROM node:18-alpine as builder
+RUN apk update && apk add bash
 WORKDIR /build
 COPY package.json ./
 COPY pnpm-lock.yaml ./
 COPY ./install-pnpm.sh ./
 RUN chmod +x ./install-pnpm.sh && ./install-pnpm.sh
 RUN pnpm install
+RUN pnpm run build:clean
+RUN pnpm prune
 
 FROM node:18-alpine
-RUN apk update && apk add --no-cache dump-init
+RUN apk update && apk add --no-cache dumb-init
 ENV HOME=/home/app
 ENV APP_HOME=$HOME/node/
 ENV NODE_ENV=production
@@ -15,6 +18,6 @@ WORKDIR $APP_HOME
 COPY --chown=node:node . $APP_HOME
 COPY --chown=node:node --from=builder /build $APP_HOME
 USER node
-EXPOSE 3000
-ENTRYPOINT ["dump-init"]
-CMD ["pnpm", "start"]
+EXPOSE 8080
+ENTRYPOINT ["dumb-init"]
+CMD ["./node_modules/.bin/fastify", "start", "-l", "info", "-a", "0.0.0.0", "--options", "./build/app.js"]
