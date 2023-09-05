@@ -14,35 +14,39 @@ declare module "fastify" {
 	}
 }
 
+const schema = {
+	"type": "object",
+	"$id": "schema:dotenv",
+	"required": ["MONGO_URL", "JWT_SECRET"],
+	"properties": {
+		"NODE_ENV": {
+			"type": "string",
+			"default": "development",
+		},
+		"PORT": {
+			"type": "integer",
+			"default": "8080",
+		},
+		"MONGO_URL": {
+			"type": "string",
+		},
+		"JWT_SECRET": {
+			"type": "string",
+		},
+		"JWT_EXPIRES_IN": {
+			"type": "string",
+			"default": "1h",
+		},
+	},
+};
+
 export default fp(async function configLoader(fastify, options) {
+	fastify.addSchema(schema);
+	console.log({sc: fastify.getSchema("schema:dotenv")});
 	await fastify.register(fastifyEnv, {
 		confKey: "secrets",
 		data: options.configData,
-		schema: {
-			"type": "object",
-			"$id": "schema:dotenv",
-			"required": ["MONGO_URL"],
-			"properties": {
-				"NODE_ENV": {
-					"type": "string",
-					"default": "development",
-				},
-				"PORT": {
-					"type": "integer",
-					"default": "8080",
-				},
-				"MONGO_URL": {
-					"type": "string",
-				},
-				"JWT_SECRET": {
-					"type": "string",
-				},
-				"JWT_EXPIRES_IN": {
-					"type": "string",
-					"default": "1h",
-				},
-			},
-		},
+		schema: fastify.getSchema("schema:dotenv"),
 	} as FastifyEnvOptions);
 
 	fastify.decorate("config", {
