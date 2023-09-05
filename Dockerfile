@@ -21,7 +21,9 @@ ENV NODE_ENV=production
 WORKDIR $APP_HOME
 COPY --chown=node:node fly.toml $APP_HOME
 COPY --chown=node:node --from=builder /build/package.json /build/pnpm-lock.yaml $APP_HOME
+COPY --chown=node:node --from=builder /build/node_modules $APP_HOME/node_modules
 COPY --chown=node:node --from=builder /build/build $APP_HOME/build
+RUN ls
 USER node
 EXPOSE 8080
 ENTRYPOINT ["dumb-init"]
