@@ -42,7 +42,6 @@ const schema = {
 
 export default fp(async function configLoader(fastify, options) {
 	fastify.addSchema(schema);
-	console.log({sc: fastify.getSchema("schema:dotenv")});
 	await fastify.register(fastifyEnv, {
 		confKey: "secrets",
 		data: options.configData,

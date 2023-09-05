@@ -13,7 +13,7 @@ export async function app(fastify: FastifyInstance, options: Record<any, any>) {
 	fastify.setSerializerCompiler(serializerCompiler);
 
 	await fastify.register(configLoader, Object.assign({}, options));
-	fastify.log.info('Config loaded %o', fastify.config);
+	fastify.log.info('Config loaded successfully. Keys: %O', Object.keys(fastify.config));
 
 	fastify.register(AutoLoad, {
 		dir: path.join(__dirname, 'plugins'),
