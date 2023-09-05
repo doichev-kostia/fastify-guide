@@ -15,7 +15,7 @@ ENV HOME=/home/app
 ENV APP_HOME=$HOME/node/
 ENV NODE_ENV=production
 WORKDIR $APP_HOME
-COPY --chown=node:node . $APP_HOME
+COPY --chown=node:node fly.toml $APP_HOME
 COPY --chown=node:node --from=builder /build $APP_HOME
 RUN ls && ls build
 USER node
