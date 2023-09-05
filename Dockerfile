@@ -3,6 +3,10 @@ RUN apk update && apk add bash
 WORKDIR /build
 COPY package.json ./
 COPY pnpm-lock.yaml ./
+COPY tsconfig.json ./
+COPY src ./src
+COPY .swcrc ./
+COPY types ./types
 COPY ./install-pnpm.sh ./
 RUN chmod +x ./install-pnpm.sh && ./install-pnpm.sh
 RUN pnpm install
@@ -16,8 +20,8 @@ ENV APP_HOME=$HOME/node/
 ENV NODE_ENV=production
 WORKDIR $APP_HOME
 COPY --chown=node:node fly.toml $APP_HOME
-COPY --chown=node:node --from=builder /build $APP_HOME
-RUN ls && ls build
+COPY --chown=node:node --from=builder /build/package.json /build/pnpm-lock.yaml $APP_HOME
+COPY --chown=node:node --from=builder /build/build $APP_HOME/build
 USER node
 EXPOSE 8080
 ENTRYPOINT ["dumb-init"]
