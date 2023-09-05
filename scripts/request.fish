@@ -3,8 +3,7 @@
 # options:
 # --auth <boolean> - whether to use auth (optional)
 # --endpoint <string> - the endpoint to hit (optional)
-
-source ./requests/auth.fish
+source ./scripts/auth.fish
 
 function normalize_endpoint
     set -l input $argv[1]
@@ -15,7 +14,11 @@ function normalize_endpoint
     echo $input
 end
 
-set -x -g base_url "http://[::1]:8080"
+if test -z $base_url
+    set -x -g base_url "http://[::1]:8080"
+end
+
+echo "Using base url: $base_url" >&2
 set -x -g endpoint ""
 set -x -g curl_args
 
