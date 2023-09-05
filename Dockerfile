@@ -17,6 +17,7 @@ ENV NODE_ENV=production
 WORKDIR $APP_HOME
 COPY --chown=node:node . $APP_HOME
 COPY --chown=node:node --from=builder /build $APP_HOME
+RUN ls && ls build
 USER node
 EXPOSE 8080
 ENTRYPOINT ["dumb-init"]
