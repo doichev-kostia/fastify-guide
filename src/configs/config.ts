@@ -37,6 +37,10 @@ const schema = {
 			"type": "string",
 			"default": "1h",
 		},
+		"LOG_LEVEL": {
+			"type": "string",
+			"default": "info",
+		}
 	},
 };
 

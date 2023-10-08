@@ -6,6 +6,7 @@ export const EnvSchema = z.object({
 	MONGO_URL: z.string(),
 	JWT_SECRET: z.string(),
 	JWT_EXPIRES_IN: z.string().default("1h"),
+	LOG_LEVEL: z.string().default("info"),
 })
 
 export type Env = z.infer<typeof EnvSchema>;

@@ -32,7 +32,8 @@ export async function app(fastify: FastifyInstance, options: Record<any, any>) {
 		cascadeHooks: true,
 		options: Object.assign({}, options)
 	})
+
 }
 
-
+export { options } from "./configs/server-options.js";
 export default app;
